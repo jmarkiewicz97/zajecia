@@ -5,7 +5,7 @@ using namespace std;
 /*komentarz3*/
 /*komentarz4*/     
 void Store(){
-     
+/*komentarz5*/     
      cout << "The Item store is not finished yet\n" << endl;
      
      int Mainmenu();
