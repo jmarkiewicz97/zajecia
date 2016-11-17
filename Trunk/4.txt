@@ -1,0 +1,312 @@
+#include<iostream>
+#include<fstream>
+ 
+using namespace std;
+ 
+#define MAXL 100
+#define MAXC 100
+int total = 0;
+ 
+int alcatroar(char mat[][MAXC],int l, int c);
+int procura_buraco_linha(char mat[][MAXC]);
+int procura_buraco_coluna(char mat[][MAXC]);
+bool procura_buraco(char mat[][MAXC]);
+bool VerificaAdjacencia_4(char mat[][MAXC]);
+bool VerificaAdjacencia_3(char mat[][MAXC]);
+bool VerificaAdjacencia_2(char mat[][MAXC]);
+bool VerificaAdjacencia_1(char mat[][MAXC]);
+int devolve_linha_adjacencia_4(char mat[][MAXC]);
+int devolve_coluna_adjacencia_4(char mat[][MAXC]);
+int devolve_linha_adjacencia_3(char mat[][MAXC]);
+int devolve_coluna_adjacencia_3(char mat[][MAXC]);
+int devolve_linha_adjacencia_2(char mat[][MAXC]);
+int devolve_coluna_adjacencia_2(char mat[][MAXC]);
+int devolve_linha_adjacencia_1(char mat[][MAXC]);
+int devolve_coluna_adjacencia_1(char mat[][MAXC]);
+ 
+int main(void)
+{
+    ifstream dados;
+    int i,j,k, numero_matrizes,linhas, colunas;
+    char linha[100], *p;
+    int t,l,c;
+    char mat[MAXL][MAXC];
+     
+    dados.open("dados.txt");
+    if(!dados)
+    cerr<<"\n\n\t\tErro: Nao Abriu ficheiro de texto."<<endl;
+     
+    dados.getline(linha,100);
+    p = strtok(linha,"\n"); 
+    numero_matrizes = atoi(p);
+     
+    for(i=0;i<numero_matrizes;i++)
+    {
+        dados.getline(linha,100);
+        p = strtok(linha," ");
+        linhas = atoi(p);
+        p = strtok(NULL,"\n");
+        colunas = atoi(p);
+        for(j=0;j<linhas;j++)
+        {
+            dados.getline(linha,100);
+            for(k=0;k<colunas;k++)
+                mat[j][k] = (char)linha[k];
+        }
+        if(VerificaAdjacencia_4(mat))
+        {
+            l = devolve_linha_adjacencia_4(mat);
+            c = devolve_coluna_adjacencia_4(mat);
+            t = alcatroar(mat,l,c);
+        }   
+        if(VerificaAdjacencia_3(mat))
+        {
+            l = devolve_linha_adjacencia_3(mat);
+            c = devolve_coluna_adjacencia_3(mat);
+            t = alcatroar(mat,l,c);
+        }
+        if(VerificaAdjacencia_2(mat))
+        {
+            l = devolve_linha_adjacencia_2(mat);
+            c = devolve_coluna_adjacencia_2(mat);
+            t = alcatroar(mat,l,c);
+        }   
+        if(VerificaAdjacencia_1(mat))
+        {
+            l = devolve_linha_adjacencia_1(mat);
+            c = devolve_coluna_adjacencia_1(mat);
+            t = alcatroar(mat,l,c);
+             
+        }   
+        while(procura_buraco(mat))
+        {
+            l = procura_buraco_linha(mat);
+            c = procura_buraco_coluna(mat);
+            t = alcatroar(mat,l,c);
+        }
+    cout<<"\nMatriz #"<<i+1<<":"<<" Movimentos="<<total;
+    total=0;
+    }
+    dados.close();
+    return 0;
+}
+ 
+int alcatroar(char mat[][MAXC],int l, int c)
+{
+    int t;
+    if(l<0 || l>MAXL || c<0 || c>MAXC)
+        return 0;
+    if(mat[l][c] == ' ')
+    {   
+        total++;
+        mat[l][c] = 'X';
+        mat[l-1][c]= 'X';
+        mat[l+1][c]= 'X';
+        mat[l][c-1]= 'X';
+        mat[l][c+1]= 'X';
+        if(VerificaAdjacencia_4(mat))
+        {
+            l = devolve_linha_adjacencia_4(mat);
+            c = devolve_coluna_adjacencia_4(mat);
+            t = alcatroar(mat,l,c);
+        }   
+        if(VerificaAdjacencia_3(mat))
+        {
+            l = devolve_linha_adjacencia_3(mat);
+            c = devolve_coluna_adjacencia_3(mat);
+            t = alcatroar(mat,l,c);
+        }
+        if(VerificaAdjacencia_2(mat))
+        {
+            l = devolve_linha_adjacencia_2(mat);
+            c = devolve_coluna_adjacencia_2(mat);
+            t = alcatroar(mat,l,c);
+        }   
+        if(VerificaAdjacencia_1(mat))
+        {
+            l = devolve_linha_adjacencia_1(mat);
+            c = devolve_coluna_adjacencia_1(mat);
+            t = alcatroar(mat,l,c);
+        }   
+        if(procura_buraco(mat))
+        {
+            l = procura_buraco_linha(mat);
+            c = procura_buraco_coluna(mat);
+            t = alcatroar(mat,l,c);
+        }
+    }
+    return total;
+}
+ 
+int procura_buraco_linha(char mat[][MAXC])
+{
+    int i,j;
+    for(i=0; i<MAXL; i++)
+        for(j=0; j<MAXC; j++)
+            if(mat[i][j] == ' ')
+                return i;
+    return 0;
+}
+ 
+int procura_buraco_coluna(char mat[][MAXC])
+{
+    int i,j;
+    for(i=0; i<MAXL; i++)
+        for(j=0; j<MAXC; j++)
+            if(mat[i][j] == ' ')
+                return j;
+    return 0;
+             
+}
+ 
+bool procura_buraco(char mat[][MAXC])
+{
+    int i,j;
+    for(i=0; i<MAXL; i++)
+        for(j=0; j<MAXC; j++)
+            if(mat[i][j] == ' ')
+                return true;
+    return false;
+}
+ 
+bool VerificaAdjacencia_4(char mat[][MAXC])
+{
+    int l, c;
+    for(l=0;l<MAXL;l++)
+        for(c=0;c<MAXC;c++)
+            if((mat[l-1][c] == ' ') && (mat[l+1][c] == ' ') && (mat[l][c-1] == ' ') && (mat[l][c+1] == ' '))
+                return true;
+    return false;
+             
+}
+ 
+bool VerificaAdjacencia_3(char mat[][MAXC])
+{
+    int l, c;
+    for(l=0;l<MAXL;l++)
+        for(c=0;c<MAXC;c++)
+            if(((mat[l][c+1] == ' ') && (mat[l][c-1] == ' ') && (mat[l-1][c] == ' ')) || ((mat[l][c+1] == ' ') && (mat[l][c-1] == ' ') && (mat[l+1][c] == ' '))
+                || ((mat[l-1][c] == ' ') && (mat[l+1][c] == ' ') && (mat[l][c-1] == ' ')) || ((mat[l-1][c] == ' ') && (mat[l+1][c] == ' ') && (mat[l][c+1] == ' ')))
+                return true;
+    return false;
+             
+}
+ 
+bool VerificaAdjacencia_2(char mat[][MAXC])
+{
+    int i, j;
+    for(i=0;i<MAXL;i++)
+        for(j=0;j<MAXC;j++)
+            if(((mat[i-1][j] == ' ') && (mat[i+1][j] == ' ')) || ((mat[i][j-1] == ' ') && (mat[i][j+1] == ' ')) || ((mat[i][j-1] == ' ') && (mat[i-1][j] == ' ')) ||
+                 ((mat[i-1][j] == ' ') && (mat[i][j+1] == ' ')) || ((mat[i][j-1] == ' ') && (mat[i+1][j] == ' ')) || ((mat[i+1][j] == ' ') && (mat[i][j+1] == ' ')) 
+                 || ((mat[i][j-1] == ' ') && (mat[i+1][j] == ' ')))
+                return true;
+    return false;
+             
+}
+ 
+bool VerificaAdjacencia_1(char mat[][MAXC])
+{
+    int i, j;
+    for(i=0;i<MAXL;i++)
+        for(j=0;j<MAXC;j++)
+            if(((mat[i][j+1] == ' ') || (mat[i][j-1] == ' ') || (mat[i-1][j] == ' ') || ((mat[i+1][j] == ' '))))
+                return true;
+    return false;
+             
+}
+ 
+ 
+int devolve_linha_adjacencia_4(char mat[][MAXC])
+{
+    int i,j;
+    for(i=0; i<MAXL; i++)
+    {
+        for(j=0; j<MAXC; j++)
+        {
+            if((mat[i][j] == ' ') && (mat[i-1][j] == ' ') && (mat[i+1][j] == ' ') && (mat[i][j-1] == ' ') && (mat[i][j+1] == ' '))
+                return i;
+        }
+    }
+    return -1;
+}
+ 
+int devolve_coluna_adjacencia_4(char mat[][MAXC])
+{
+    int i,j;
+    for(i=0; i<MAXL; i++)
+    {
+        for(j=0; j<MAXC; j++)
+        {
+            if((mat[i][j] == ' ') && (mat[i-1][j] == ' ') && (mat[i+1][j] == ' ') && (mat[i][j-1] == ' ') && (mat[i][j+1] == ' '))
+                return j;
+        }
+    }
+    return -1;
+}
+ 
+int devolve_linha_adjacencia_3(char mat[][MAXC])
+{
+    int i,j;
+    for(i=0; i<MAXL; i++)
+        for(j=0; j<MAXC; j++)
+            if((mat[i][j] == ' ') && (((mat[i-1][j] == ' ') && (mat[i+1][j] == ' ') && (mat[i][j-1] == ' ')) || ((mat[i-1][j] == ' ') && (mat[i+1][j] == ' ') && (mat[i][j+1] == ' '))
+                || ((mat[i-1][j] == ' ') && (mat[i][j-1] == ' ') && (mat[i][j+1] == ' ')) || ((mat[i+1][j] == ' ') && (mat[i][j-1] == ' ') && (mat[i][j+1] == ' '))))
+                return i;
+    return -1;
+}
+ 
+int devolve_coluna_adjacencia_3(char mat[][MAXC])
+{
+    int i,j;
+    for(i=0; i<MAXL; i++)
+        for(j=0; j<MAXC; j++)
+            if((mat[i][j] == ' ') && (((mat[i-1][j] == ' ') && (mat[i+1][j] == ' ') && (mat[i][j-1] == ' ')) || ((mat[i-1][j] == ' ') && (mat[i+1][j] == ' ') && (mat[i][j+1] == ' '))
+                || ((mat[i-1][j] == ' ') && (mat[i][j-1] == ' ') && (mat[i][j+1] == ' ')) || ((mat[i+1][j] == ' ') && (mat[i][j-1] == ' ') && (mat[i][j+1] == ' '))))
+                return j;
+    return -1;
+}
+ 
+int devolve_linha_adjacencia_2(char mat[][MAXC])
+{
+    int i,j;
+    for(i=0; i<MAXL; i++)
+        for(j=0; j<MAXC; j++)
+            if((mat[i][j] == ' ') && (((mat[i-1][j] == ' ') && (mat[i+1][j] == ' ')) || ((mat[i][j-1] == ' ') && (mat[i][j+1] == ' ')) || ((mat[i][j-1] == ' ') && (mat[i-1][j] == ' ')) ||
+                 ((mat[i-1][j] == ' ') && (mat[i][j+1] == ' ')) || ((mat[i][j-1] == ' ') && (mat[i+1][j] == ' ')) || ((mat[i+1][j] == ' ') && (mat[i][j+1] == ' ')) 
+                 || ((mat[i][j-1] == ' ') && (mat[i+1][j] == ' '))))
+                return i;
+    return -1;
+}
+ 
+int devolve_coluna_adjacencia_2(char mat[][MAXC])
+{
+    int i,j;
+    for(i=0; i<MAXL; i++)
+        for(j=0; j<MAXC; j++)
+            if((mat[i][j] == ' ') && (((mat[i-1][j] == ' ') && (mat[i+1][j] == ' ')) || ((mat[i][j-1] == ' ') && (mat[i][j+1] == ' ')) || ((mat[i][j-1] == ' ') && (mat[i-1][j] == ' ')) ||
+                 ((mat[i-1][j] == ' ') && (mat[i][j+1] == ' ')) || ((mat[i][j-1] == ' ') && (mat[i+1][j] == ' ')) || ((mat[i+1][j] == ' ') && (mat[i][j+1] == ' ')) 
+                 || ((mat[i][j-1] == ' ') && (mat[i+1][j] == ' '))))
+                return j;
+    return -1;
+}
+ 
+int devolve_linha_adjacencia_1(char mat[][MAXC])
+{
+    int i,j;
+    for(i=0; i<MAXL; i++)
+        for(j=0; j<MAXC; j++)
+            if((mat[i][j] == ' ') && ((mat[i][j+1] == ' ') || (mat[i][j-1] == ' ') || (mat[i-1][j] == ' ') || ((mat[i+1][j] == ' ')))) 
+                 return i;
+    return -1;
+}
+ 
+int devolve_coluna_adjacencia_1(char mat[][MAXC])
+{
+    int i,j;
+    for(i=0; i<MAXL; i++)
+        for(j=0; j<MAXC; j++)
+            if((mat[i][j] == ' ') && ((mat[i][j+1] == ' ') || (mat[i][j-1] == ' ') || (mat[i-1][j] == ' ') || ((mat[i+1][j] == ' ')))) 
+                return j;
+    return -1;
+}
