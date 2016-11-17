@@ -1,5 +1,5 @@
 
-
+/* to mój komentarz Przemek */
 #include <iostream>
  
 using namespace std;
