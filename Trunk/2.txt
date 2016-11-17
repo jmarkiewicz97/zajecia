@@ -15,7 +15,7 @@ void Store(){
      
 void Character(){
      
-     int PlayerHp, PlayerStr, PlayerMana;
+     int PlayerHp, PlayerStr, PlayerMana;/*komentarz8*/
      
      cout << "Your character has:\n\n";
                
