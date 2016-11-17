@@ -1,5 +1,5 @@
 #include <iostream>/*komentarz11*/
-using namespace std;
+using namespace std;/*komentarz12*/
      
 void Store(){
      
