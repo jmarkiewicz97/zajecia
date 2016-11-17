@@ -1,0 +1,280 @@
+try:
+    from ttk import Frame
+    from Tkconstants import RAISED
+except ImportError:
+    from tkinter.ttk import Frame
+    from tkinter.constants import RAISED
+
+
+class Item(Frame):
+    def __init__(self, master, x,y, width, height, value, style, selection_handler=None, drag_handler = None, drop_handler=None):
+
+        Frame.__init__(self, master, relief=RAISED, style=style, class_="Item")
+
+        self._x = x
+        self._y = y
+        
+        self._width = width
+        self._height = height
+        
+        self.tag = "tag%s"%id(self)
+        self.value = value
+
+        self._selection_handler = selection_handler
+        self._drag_handler = drag_handler
+        self._drop_handler = drop_handler
+
+        self.place(x=x, y=y, width= width, height=height)
+
+        self.bind_class(self.tag, "<ButtonPress-1>", self._on_selection)
+        self.bind_class(self.tag, "<B1-Motion>", self._on_drag)
+        self.bind_class(self.tag, "<ButtonRelease-1>", self._on_drop)
+        
+        self.add_bindtag(self)
+
+    @property
+    def x(self):
+        return self._x
+        
+    @property
+    def y(self):
+        return self._y
+        
+    @property
+    def width(self):
+        return self._width
+
+    @property
+    def height(self):
+        return self._height
+        
+    def add_bindtag(self, *args):
+        for widget in args:
+            bindtags = widget.bindtags()
+            if self.tag not in bindtags:
+                widget.bindtags((self.tag,) + bindtags)
+
+    def add_bindtag_to_children(self):
+        list_of_widgets = self.children.values()
+        while len(list_of_widgets) != 0:
+            widget = list_of_widgets.pop()
+            list_of_widgets.extend(widget.children.values())
+            
+            self.add_bindtag(widget)
+
+    def _on_selection(self, event):
+        self.tkraise()
+
+        self._move_lastx = event.x_root
+        self._move_lasty = event.y_root
+        
+        if self._selection_handler:
+            self._selection_handler(self)
+
+    def _on_drag(self, event):
+        self.master.update_idletasks()
+        
+        cursor_x = self._x + event.x
+        cursor_y = self._y + event.y
+
+        self._x += event.x_root - self._move_lastx
+        self._y += event.y_root - self._move_lasty
+
+        self._move_lastx = event.x_root
+        self._move_lasty = event.y_root
+
+        self.place_configure(x=self._x, y=self._y)
+
+        if self._drag_handler:
+            self._drag_handler(cursor_x, cursor_y)
+           
+    def _on_drop(self, event):
+        if self._drop_handler:
+            self._drop_handler()
+            
+    def set_position(self, x,y):
+        self._x = x
+        self._y = y
+        self.place_configure(x =x, y =y)
+        
+    def move(self, dx, dy):
+        self._x += dx
+        self._y += dy
+
+        self.place_configure(x =self._x, y =self._y)
+
+class DDList(Frame):
+    def __init__(self, master, item_width, item_height, offset_x=0, offset_y=0, gap=0):
+        Frame.__init__(self, master)
+
+        self._item_width = item_width
+        self._item_height = item_height
+        
+        self._offset_x = offset_x
+        self._offset_y = offset_y
+        
+        self._limit_x = self._offset_x + self._item_width
+
+        self._gap = gap
+
+        self._index_of_selected_item = None
+
+        self._list_of_items = []
+        self._position = {}
+        
+        self._index_of_container = None
+        
+    def item(self, index="END", value=None, style="TFrame"):
+        index = self._process_index(index)
+        
+        x = self._offset_x
+        y = self._offset_y + index * (self._item_height + self._gap)
+
+        item = Item(self.master, x,y, self._item_width, self._item_height, value, style, self._on_item_selected, self._on_item_dragged, self._on_item_dropped)
+        self._list_of_items.insert(index, item)
+        self._position[item] = index
+
+        return item
+
+    def delete_item(self, index):
+        
+        if isinstance(index, Item):
+            index = self._position[item]
+        else:
+            index = self._process_index(index)
+
+        item = self._list_of_items.pop(index)
+        del self._position[item]
+
+        item.destroy()
+        
+        for i in range(index, len(self._list_of_items)):
+            _item = self._list_of_items[i]
+            _item.move(0,  -(self._item_height+self._gap))
+            self._position[_item] -= 1
+    
+    del_item = delete_item
+
+    def get_item(self, index):
+        index = self._process_index(index)
+
+        return self._list_of_items[index]
+
+    def _process_index(self, index):
+        if isinstance(index, basestring) and index.upper() == "END":
+            index = len(self._list_of_items)
+        else:
+            index = int(index)
+            if index < 0:
+                index = len(self._list_of_items) + index
+
+        return index
+
+    def _on_item_selected(self, item):        
+        self._index_of_selected_item = self._position[item]
+        self._index_of_container = self._index_of_selected_item
+
+    def _on_item_dragged(self, x, y):
+        limit_y = self._offset_y + len(self._list_of_items) * self._item_height + (len(self._list_of_items) -1) * self._gap
+
+        if self._offset_x < x < self._limit_x and self._offset_y < y < limit_y:
+
+            quotient, remainder = divmod(y-self._offset_y, self._item_height + self._gap)
+
+            if remainder < self._item_height:
+            
+                new_container = quotient
+
+                if new_container != self._index_of_container:
+                    if new_container > self._index_of_container:
+                        for index in range(self._index_of_container+1, new_container+1, 1):
+                            item = self._get_item_of_virtual_list(index)                            
+
+                            item.move(0,-(self._item_height+self._gap))
+                    else:
+                        for index in range(self._index_of_container-1, new_container-1, -1):
+                            item = self._get_item_of_virtual_list(index)
+
+                            item.move(0,self._item_height+self._gap)
+
+                    self._index_of_container = new_container
+                    
+    def _get_item_of_virtual_list(self, index):
+        if self._index_of_container == index:
+            raise Exception("No item in index: %s"%index)
+        else:
+            if self._index_of_container != self._index_of_selected_item:
+                if index > self._index_of_container:
+                    index -= 1
+
+                if index >= self._index_of_selected_item:
+                    index += 1
+            item = self._list_of_items[index]
+            return item
+
+    def _on_item_dropped(self):
+        
+        item = self._list_of_items.pop(self._index_of_selected_item)
+        self._list_of_items.insert(self._index_of_container, item)
+        
+        x = self._offset_x
+        y = self._offset_y + self._index_of_container *(self._item_height + self._gap)
+        
+        item.set_position(x,y)
+        
+        for i in range(min(self._index_of_selected_item, self._index_of_container),max(self._index_of_selected_item, self._index_of_container)+1):
+            item = self._list_of_items[i]
+            self._position[item] = i
+            
+        self._index_of_container = None
+        self._index_of_selected_item = None
+
+if __name__ == "__main__":
+    try:
+        from Tkinter import Tk, IntVar
+        from ttk import Label, Frame, Entry, Button
+        from tkMessageBox import messagebox
+        from Tkconstants import *
+    except ImportError:
+        from tkinter import Tk, IntVar, messagebox
+        from tkinter.ttk import Label, Frame, Entry, Button
+        from tkinter.constants import *
+
+    root = Tk()
+    root.title("DDList example")
+    root.geometry("%dx%d%+d%+d"%(640, 530, 0, 0))
+
+    sortable_list = DDList(root, 200, 100, offset_x=10, offset_y=10, gap =10)
+    sortable_list.pack(expand=True, fill=BOTH)
+    
+    for i in range(4):
+        item = sortable_list.item(value=i)
+        label = Label(item, text="this is a label %s"%i)
+        label.pack(anchor=W, padx= (4,0), pady= (4,0))
+        
+        item.add_bindtag_to_children()
+
+    frame = Frame(root)
+    frame.pack(fill=X, pady=(0, 10))
+    
+    indexVar = IntVar()
+    label = Label(frame, text="Entry index of item to delete:")
+    label.pack(side=LEFT, padx=(10,6))
+    entry_of_index = Entry(frame,textvariable= indexVar, width=3)
+    
+    def delete_item():
+        try:
+            index = indexVar.get()
+        except ValueError:
+            messagebox.showerror("Error", "Not a valid integer")
+            return
+
+        entry_of_index.delete(0, END)
+        sortable_list.delete_item(index)
+    entry_of_index.bind('<Return>', delete_item)
+
+    entry_of_index.pack(side=LEFT)
+    
+    Button(frame, text="Delete", command=delete_item).pack(side=LEFT, padx=(3,0))
+
+    root.mainloop()
