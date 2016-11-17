@@ -20,7 +20,7 @@ void Character(){
      cout << PlayerStr << " Strength" << endl;
      cout << PlayerMana << " Mana" << endl;
      
-     cout << endl;
+     cout << endl;/*komentarz17*/
      
      int Mainmenu();
      Mainmenu();
