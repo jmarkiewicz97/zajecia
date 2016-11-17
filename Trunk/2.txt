@@ -3,7 +3,7 @@
 /*komentarz2*/
 using namespace std;
 /*komentarz3*/
-     
+/*komentarz4*/     
 void Store(){
      
      cout << "The Item store is not finished yet\n" << endl;
