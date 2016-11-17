@@ -6,7 +6,7 @@ void Store(){
      cout << "The Item store is not finished yet\n" << endl;/*komentarz13*/
      
      int Mainmenu();
-     Mainmenu();
+     Mainmenu();/*komentarz14*/
      
      }
      
