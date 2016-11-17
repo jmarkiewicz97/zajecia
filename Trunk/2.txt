@@ -1,36 +1,151 @@
+#include <iostream>
+using namespace std;
+/*komentarz1*/
+#include <iostream>
+/*komentarz2*/
+using namespace std;
+     
+/*komentarz3*/
+/*komentarz4*/     
+void Store(){
+     
+/*komentarz5*/     
+     cout << "The Item store is not finished yet\n" << endl;
+     
+     int Mainmenu();
+/*komentarz6*/     
+     int Mainmenu();/*komentarz7*/
+     Mainmenu();
+     
+     }
+     
+void Character(){
+     
+     int PlayerHp, PlayerStr, PlayerMana;
+     int PlayerHp, PlayerStr, PlayerMana;/*komentarz8*/
+     
+     cout << "Your character has:\n\n";
+               
+     cout << PlayerHp << " Health" << endl;
+     cout << PlayerHp << " Health" << endl;/*komentarz9*/
+     cout << PlayerStr << " Strength" << endl;
+     cout << PlayerMana << " Mana" << endl;
+     
+     cout << endl;
+     
+     int Mainmenu();
+     Mainmenu();
+     }
+     
+void Inventory(){
+     
+     cout << "Your inventory contains:\n" << endl;
+     cout << "Your inventory contains:\n" << endl;/*komentarz10*/
+     
+     int Mainmenu();
+     Mainmenu();
+
+     }
+     
+void Wilderness(){
+     
+     cout << "You search the Jungle and find:\n" << endl;
+     
+     string Creatures[10];
+     
+     Creatures[0] = "1";
+     Creatures[1] = "2";
+     Creatures[2] = "3";
+     Creatures[3] = "4";
+     
+     cout << Creatures << " Is really dangerous " << endl;
+     
+     int Mainmenu();
+     Mainmenu();
+     }
+
+void Mainmenu(){
+     
+     string choice;
+     
+     cout << "1: Attack creature" << endl;
+     cout << "2: Buy equipment" << endl;
+     cout << "3: Inventory" << endl;
+     cout << "4: Stats" << endl;
+          
+          // invalid option returns to this
+          InvalidOption:
+                      
+     cin >> choice;
+     if (choice == "1"){
+                Wilderness ();
+                }
+     else if (choice == "2"){
+                     Store();
+                     }
+     else if (choice == "3"){
+                     Inventory();
+                     }
+     else if (choice == "4"){
+                     Character();
+                     }
+     else{
+          cout << "You have not chosen a valid option" << endl;
+          goto InvalidOption;
+     }
+                     
+
+     
+     }
+
+int main()
+{
+    int PlayerHp = 100, PlayerStr = 20, PlayerMana = 50;
+    Mainmenu ();
+}
+#include <iostream>
+using namespace std;
 #include <iostream>/*komentarz11*/
 using namespace std;/*komentarz12*/
      
 void Store(){
      
+     cout << "The Item store is not finished yet\n" << endl;
      cout << "The Item store is not finished yet\n" << endl;/*komentarz13*/
      
      int Mainmenu();
+     Mainmenu();
      Mainmenu();/*komentarz14*/
      
      }
      
 void Character(){
      
+     int PlayerHp, PlayerStr, PlayerMana;
      int PlayerHp, PlayerStr, PlayerMana;/*komentarz15*/
      
      cout << "Your character has:\n\n";
                
+     cout << PlayerHp << " Health" << endl;
      cout << PlayerHp << " Health" << endl;/*komentarz16*/
      cout << PlayerStr << " Strength" << endl;
      cout << PlayerMana << " Mana" << endl;
      
+     cout << endl;
      cout << endl;/*komentarz17*/
      
+     int Mainmenu();
      int Mainmenu();/*komentarz18*/
      Mainmenu();
      }
      
 void Inventory(){
      
+     cout << "Your inventory contains:\n" << endl;
      cout << "Your inventory contains:\n" << endl;/*komentarz19*/
      
      int Mainmenu();
+     Mainmenu();
      Mainmenu();/*komentarz20*/
 
      }
