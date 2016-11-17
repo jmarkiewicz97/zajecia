@@ -1,0 +1,188 @@
+try:
+    from ttk import Frame, LabelFrame as TLabelFrame, Button
+    from Tkinter import LabelFrame
+    
+except ImportError:
+    from tkinter.ttk import Frame, LabelFrame as TLabelFrame, Button
+    from tkinter import LabelFrame
+
+class BaseForm(object):
+    
+    def __init__(self, action, widget_kw):
+        
+        self._action = action
+        self._hidden_data = dict()
+
+        widget_kw["class"] = "Form"
+        
+    @property
+    def action(self):
+        return self._action
+
+    @property
+    def hidden_data(self):
+        return self._hidden_data
+
+class Form_Frame(Frame, BaseForm):
+    
+    def __init__(self, parent, action=None, *args, **kw):
+        BaseForm.__init__(self, action, kw)
+        Frame.__init__(self, parent, *args, **kw)
+
+Form = Form_Frame
+
+class Form_LabelFrame(LabelFrame, BaseForm):
+    
+    def __init__(self, parent, action=None, *args, **kw):
+        BaseForm.__init__(self, action, kw)
+        LabelFrame.__init__(self, parent, *args, **kw)
+
+class Form_TLabelFrame(TLabelFrame, BaseForm):
+    
+    def __init__(self, parent, action=None, *args, **kw):
+        BaseForm.__init__(self, action, kw)
+        TLabelFrame.__init__(self, parent, *args, **kw)
+
+
+class SubmitButton(Button):
+    def __init__(self, parent, *args, **kw):
+        kw["command"] = self.submit
+        Button.__init__(self, parent, *args, **kw)
+
+    def submit(self):
+        form_widget = self
+        while True:
+            parent_name = form_widget.winfo_parent()
+            if parent_name == "":
+                raise Exception("No form found")
+            else:
+                form_widget = form_widget.nametowidget(parent_name)
+                if form_widget.winfo_class() == "Form":
+                    break
+
+        form_action = form_widget.action
+        
+        if form_action is None:
+            return
+        
+        form_data = {}
+        form_data.update(form_widget.hidden_data)
+
+        list_of_widgets = form_widget.winfo_children()
+        
+        while True:
+            try:
+                widget_name = list_of_widgets.pop()
+            except IndexError:
+                break
+
+            widget = form_widget.nametowidget(widget_name)
+            list_of_widgets.extend(widget.winfo_children())
+
+            if not hasattr(widget,"fieldname"): continue
+            
+            field_name = widget.fieldname
+            field_class = widget.winfo_class()
+            
+            if field_class == "Entry" or field_class == "TEntry":
+                field_value = widget.get()
+            elif field_class == "Text":               
+                field_value = widget.get("1.0",'end-1c')
+            elif field_class == "TCombobox":
+                field_value = widget.get()
+            elif field_class == "Listbox":
+                field_value = [widget.get(idx) for idx in widget.curselection()]
+            elif field_class == "Checkbutton" or field_class == "TCheckbutton":
+                variable_name = widget.cget("variable").string
+                field_value = widget.tk.globalgetvar(variable_name)
+            elif field_class == "Radiobutton" or field_class == "TRadiobutton":
+                field_value = widget.tk.globalgetvar(widget.cget("variable").string)
+            else:
+                continue
+
+            form_data[field_name] = field_value
+
+        form_action(form_data)
+
+
+if __name__== "__main__":
+    try:
+        from Tkinter import Entry, Radiobutton, Checkbutton, Text, Listbox, Tk, Label, messagebox, StringVar
+        from ttk import Combobox
+        from Tkconstants import *
+    except ImportError:
+        from tkinter import Entry, Radiobutton, Checkbutton, Text, Listbox, Tk, Label, messagebox, StringVar
+        from tkinter.ttk import Combobox
+        from tkinter.constants import *
+
+    import pprint
+    
+    pp = pprint.PrettyPrinter(indent=4)
+
+    root= Tk()
+
+    form = Form(root, lambda data: messagebox.showinfo("form data",pp.pformat(data)))
+    form.pack(expand=True, fill="both", ipadx=10, ipady=10)
+
+    form.hidden_data["hidden_var1"] = "value1"
+    form.hidden_data["hidden_var2"] = "value2"
+
+    Label(form, text="Entry:").grid(row=0,column=0, sticky=E, pady=(8,0))
+
+    entry = Entry(form)
+    entry.fieldname = "entry"
+    entry.grid(row=1,column=1, sticky =E+W)
+    
+    Label(form, text="Checkbuttons:").grid(row=2,column=0, sticky=E, pady=(8,0))
+    column = Frame(form)
+    column.grid(row=3,column=1, sticky =E+W)
+
+    checkbutton0 = Checkbutton(column, text="Option 0")
+    checkbutton0.fieldname = "checkbutton0"
+    checkbutton0.pack(side=LEFT)
+
+    checkbutton1 = Checkbutton(column, text="Option 1")
+    checkbutton1.fieldname = "checkbutton1"
+    checkbutton1.pack(side=LEFT)
+    
+    checkbutton2 = Checkbutton(column, text="Option 2")
+    checkbutton2.fieldname = "checkbutton2"
+    checkbutton2.pack(side=LEFT)
+    
+    Label(form, text="Radiobuttons:").grid(row=4,column=0, sticky=E, pady=(8,0))
+    column = Frame(form)
+    column.grid(row=5,column=1, sticky =E+W)
+
+    variable = StringVar()
+    radiobutton0 = Radiobutton(column, variable = variable, value="value0", text="Selection 0")
+    radiobutton0.fieldname = "radiobutton"
+    radiobutton0.pack(side=LEFT)
+    
+    radiobutton1 = Radiobutton(column, variable = variable, value="value1", text="Selection 1")
+    radiobutton0.fieldname = "radiobutton"
+    radiobutton1.pack(side=LEFT)
+    
+    Label(form, text="Text area:").grid(row=6,column=0, sticky=E, pady=(8,0))
+
+    text = Text(form, height=5)
+    text.fieldname = "text"
+    text.grid(row=7,column=1, sticky =E+W)
+
+    Label(form, text="Listbox:").grid(row=8,column=0, sticky=E, pady=(8,0))
+
+    listbox = Listbox(form)
+    listbox.fieldname = "listbox"
+    listbox.grid(row=9,column=1, sticky=W)
+
+    for item in ["one", "two", "three", "four"]:
+        listbox.insert("end", item)
+
+    Label(form, text="Combobox:").grid(row=10,column=0, sticky=E, pady=(8,0))
+
+    combobox = Combobox(form, values = ('X', 'Y', 'Z'), width=5)
+    combobox.fieldname = "combobox"
+    combobox.grid(row=11,column=1, sticky=W)
+
+    SubmitButton(form, text="Submit").grid(row=12,column=1,sticky =E)
+    
+    form.mainloop()
