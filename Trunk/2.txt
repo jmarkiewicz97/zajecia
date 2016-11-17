@@ -22,7 +22,7 @@ void Character(){
      
      cout << endl;/*komentarz17*/
      
-     int Mainmenu();
+     int Mainmenu();/*komentarz18*/
      Mainmenu();
      }
      
