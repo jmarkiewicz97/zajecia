@@ -31,7 +31,7 @@ void Character(){
      
 void Inventory(){
      
-     cout << "Your inventory contains:\n" << endl;
+     cout << "Your inventory contains:\n" << endl;/*komentarz10*/
      
      int Mainmenu();
      Mainmenu();
