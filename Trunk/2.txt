@@ -1,5 +1,6 @@
 /*komentarz1*/
 #include <iostream>
+/*komentarz2*/
 using namespace std;
      
 void Store(){
