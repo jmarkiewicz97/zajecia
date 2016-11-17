@@ -2,6 +2,7 @@
 #include <iostream>
 /*komentarz2*/
 using namespace std;
+/*komentarz3*/
      
 void Store(){
      
