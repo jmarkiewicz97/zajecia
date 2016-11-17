@@ -16,7 +16,7 @@ void Character(){
      
      cout << "Your character has:\n\n";
                
-     cout << PlayerHp << " Health" << endl;
+     cout << PlayerHp << " Health" << endl;/*komentarz16*/
      cout << PlayerStr << " Strength" << endl;
      cout << PlayerMana << " Mana" << endl;
      
