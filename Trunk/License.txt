@@ -31,3 +31,5 @@ Should the Software prove defective, you and not ACME assume the entire cost of 
 ACME IS NOT RESPONSIBLE FOR ANY INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES OF ANY CHARACTER INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF GOODWILL, WORK STOPPAGE, COMPUTER FAILURE OR MALFUNCTION, OR ANY AND ALL OTHER COMMERCIAL DAMAGES OR LOSSES.  
  
 Title, ownership rights and intellectual property rights in and to the Software shall remain in ACME. The Software is protected by international copyright treaties.  
+
+Koniec licencji.
