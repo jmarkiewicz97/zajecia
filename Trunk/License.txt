@@ -35,3 +35,5 @@ Title, ownership rights and intellectual property rights in and to the Software 
 Koniec licencji.
 
 To jest zmiana 3 w master.
+To jest zmiana 3 w galaz.
+
