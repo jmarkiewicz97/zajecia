@@ -33,3 +33,5 @@ ACME IS NOT RESPONSIBLE FOR ANY INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL 
 Title, ownership rights and intellectual property rights in and to the Software shall remain in ACME. The Software is protected by international copyright treaties.  
 
 Koniec licencji.
+
+To jest zmiana 3 w master.
